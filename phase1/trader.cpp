@@ -1,4 +1,5 @@
 #include "receiver.h"
+#include "trie.h"
 #include <vector>
 
 using namespace std;
@@ -317,10 +318,240 @@ int main(int argc, char **argv)
     Receiver rcv;
     sleep(3);
     string message = rcv.readIML();
-    if (argc == 1)
+    if (stoi(argv[1]) == 1)//-------------------------------------------------------------------------PART1---------------------------------------------------------------------------------------
     {
+        TrieNode *root = new TrieNode();
+        vector<string> lines = {""};
+        string temp = "";
+        for (char i : message)
+        {
+            if (i == '$'){
+                break;
+            }
+            else if (i == '#')
+            {
+                lines.push_back(temp);
+
+                string company = lines[1];
+                int price = stoi(lines[2]);
+                string buy_sale;
+                vector<int> last_price(3);
+                last_price = search_key(root, company);
+                if (lines[3] == "s")
+                {
+                    buy_sale = "b";
+                }
+                else
+                {
+                    buy_sale = "s";
+                }
+
+                if (last_price[0] == -1)
+                {
+                    insert_key(root, company, price, -1, -1);
+                    cout << company << " " << price << " " << buy_sale << endl;
+                }
+                else if (last_price[1] == -1 && last_price[2] == -1)//------------------------------------------------------------------------
+                {
+                    if (buy_sale == "b")
+                    {
+                        if (price >= last_price[0])
+                        { // not strictly greater
+                            cout << "No Trade" << endl;
+                            insert_key(root, company, last_price[0], price, last_price[2]);
+                        }
+                        else
+                        {
+                            insert_key(root, company, price, last_price[1], last_price[2]);
+                            cout << company << " " << price << " " << buy_sale << endl;
+                        }
+                    }
+                    else
+                    {
+                        if (price <= last_price[0])
+                        { // not strictly lesser
+                            cout << "No Trade" << endl;
+                            insert_key(root, company, last_price[0], last_price[1], price);
+                        }
+                        else
+                        {
+                            insert_key(root, company, price, last_price[1], last_price[2]);
+                            cout << company << " " << price << " " << buy_sale << endl;
+                        }
+                    }
+                }
+                else if (last_price[2] == -1)//------------------------------------------------------------------------
+                {
+                    if (buy_sale == "b")
+                    {
+                        if (price >= last_price[1])
+                        { // not strictly greater
+                            cout << "No Trade" << endl;
+                        }
+                        else
+                        {
+                            if (price >= last_price[0])
+                            { // not strictly greater
+                                cout << "No Trade" << endl;
+                                if (price < last_price[1])
+                                {
+                                    insert_key(root, company, last_price[0], price, last_price[2]);
+                                }
+                            }
+                            else
+                            {
+                                insert_key(root, company, price, -1, last_price[2]);
+                                cout << company << " " << price << " " << buy_sale << endl;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (price == last_price[1])
+                        { // not strictly greater
+                            cout << "No Trade" << endl;
+                            insert_key(root, company, last_price[0], -1, last_price[2]);
+                        }
+                        else
+                        {
+                            if (price <= last_price[0])
+                            { // not strictly greater
+                                cout << "No Trade" << endl;
+                                insert_key(root, company, last_price[0], last_price[1], price);
+                            }
+                            else
+                            {
+                                insert_key(root, company, price, last_price[1], last_price[2]);
+                                cout << company << " " << price << " " << buy_sale << endl;
+                            }
+                        }
+                    }
+                }
+                else if (last_price[1] == -1)//------------------------------------------------------------------------
+                {
+                    if (buy_sale == "s")
+                    {   
+                        
+                        if (price <= last_price[2])
+                        { // not strictly greater
+                            cout << "No Trade" << endl;
+                        }
+                        else
+                        {
+                            if (price <= last_price[0])
+                            { // not strictly greater
+                                cout << "No Trade" << endl;
+                                if (price > last_price[2])
+                                {
+                                    insert_key(root, company, last_price[0], last_price[1], price);
+                                }
+                            }
+                            else
+                            {
+                                insert_key(root, company, price, last_price[1], last_price[2]);
+                                cout << company << " " << price << " " << buy_sale << endl;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (price == last_price[2])
+                        { // not strictly greater
+                            cout << "No Trade" << endl;
+                            insert_key(root, company, last_price[0], last_price[1], -1);
+                        }
+                        else
+                        {
+                            if (price >= last_price[0])
+                            { // not strictly greater
+                                cout << "No Trade" << endl;
+                                insert_key(root, company, last_price[0], price, last_price[2]);
+                            }
+                            else
+                            {
+                                insert_key(root, company, price, last_price[1], -1);
+                                cout << company << " " << price << " " << buy_sale << endl;
+                            }
+                        }
+                    }
+                }
+                else//---------------------------------------------------------------------------------------------------
+                {
+                    if (buy_sale == "b")
+                    {
+                        if (price >= last_price[1])
+                        { // not strictly greater
+                            cout << "No Trade" << endl;
+                        }
+                        else if (price == last_price[2])
+                        { // not strictly greater
+                            cout << "No Trade" << endl;
+                            insert_key(root, company, last_price[0], last_price[1], -1);
+                        }
+                        else
+                        {
+                            if (price >= last_price[0])
+                            { // not strictly greater
+                                cout << "No Trade" << endl;
+                                if (price < last_price[1])
+                                {
+                                    insert_key(root, company, last_price[0], price, last_price[2]);
+                                }
+                            }
+                            else
+                            {
+                                insert_key(root, company, price, last_price[1], last_price[2]);
+                                cout << company << " " << price << " " << buy_sale << endl;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (price <= last_price[2])
+                        { // not strictly greater
+                            cout << "No Trade" << endl;
+                        }
+                        else if (price == last_price[1])
+                        { // not strictly greater
+                            cout << "No Trade" << endl;
+                            insert_key(root, company, last_price[0], -1, last_price[2]);
+                        }
+                        else
+                        {
+                            if (price <= last_price[0])
+                            { // not strictly lesser
+                                cout << "No Trade" << endl;
+                                if (price > last_price[2])
+                                {
+                                    insert_key(root, company, last_price[0], last_price[1], price);
+                                }
+                            }
+                            else
+                            {
+                                insert_key(root, company, price, last_price[1], last_price[2]);
+                                cout << company << " " << price << " " << buy_sale << endl;
+                            }
+                        }
+                    }
+                }
+            }
+            else if ((int)i == 13)
+            {
+                temp = "";
+                lines = {""};
+            }
+            else if (i == ' ')
+            {
+                lines.push_back(temp);
+                temp = "";
+            }
+            else
+            {
+                temp.push_back(i);
+            }
+        }
     }
-    else if (argc == 2)
+    else if (stoi(argv[1]) == 2)
     {
         ll1 *head = nullptr;
         ll1 *tail = nullptr;
@@ -376,7 +607,7 @@ int main(int argc, char **argv)
         }
         cout << sum << endl;
     }
-    else if (argc == 3)
+    else if (stoi(argv[1]) == 3)
     {
     }
     else

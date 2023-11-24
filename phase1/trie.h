@@ -1,11 +1,14 @@
 #include <bits/stdc++.h> 
 using namespace std; 
+#include <vector>
 
 struct TrieNode { 
 
 	// pointer array for child nodes of each node 
 	TrieNode* childNode[26]; 
 	int wordCount; 
+	int b;
+	int s;
 
 	TrieNode() 
 	{ 
@@ -13,14 +16,16 @@ struct TrieNode {
 		// initialize the wordCnt variable with 0 
 		// initialize every index of childNode array with 
 		// NULL 
-		wordCount = -1; 
+		wordCount = -1;
+		b = -1;
+		s = -1; 
 		for (int i = 0; i < 26; i++) { 
 			childNode[i] = NULL; 
 		} 
 	} 
 }; 
 
-void insert_key(TrieNode* root, string& key, int val) 
+void insert_key(TrieNode* root, string& key, int val,int lastbuyorder, int lastsellorder) 
 { 
 	// Initialize the currentNode pointer 
 	// with the root node 
@@ -53,13 +58,19 @@ void insert_key(TrieNode* root, string& key, int val)
 	// pointer this implies that there is a string ending at 
 	// currentNode. 
 	currentNode->wordCount = val; 
+	currentNode->b = lastbuyorder; 
+	currentNode->s = lastsellorder; 
 } 
 
-int search_key(TrieNode* root, string& key) 
+vector<int> search_key(TrieNode* root, string& key) 
 { 
 	// Initialize the currentNode pointer 
 	// with the root node 
 	TrieNode* currentNode = root; 
+	vector<int> result;
+	result.push_back(-1);
+	result.push_back(-1);
+	result.push_back(-1);
 
 	// Iterate across the length of the string 
 	for (auto c : key) { 
@@ -72,7 +83,7 @@ int search_key(TrieNode* root, string& key)
 		if (currentNode->childNode[b] == NULL) { 
 
 			// Given word does not exist in Trie 
-			return -1; 
+			return result; 
 		} 
 
 		// Move the currentNode pointer to the already 
@@ -80,5 +91,9 @@ int search_key(TrieNode* root, string& key)
 		currentNode = currentNode->childNode[b]; 
 	} 
 
-	return currentNode->wordCount; 
+	result[0] = currentNode->wordCount;
+	result[1] = currentNode->b;
+	result[2] = currentNode->s;
+
+	return result; 
 }
