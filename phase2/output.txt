@@ -1,0 +1,17 @@
+TL
+0 KarGoExpress BUY AMD $140 #9 10
+0 KarGoCorp BUY AMD $140 #9 10
+1 KarGoExpress BUY r $140 #9 10
+1 KarGoKrab SELL AMD $20 #9 8
+!@
+@!
+Successfully Initiated!
+KarGoCorp purchased 9 share of AMD from KarGoKrab for $140/share
+
+---End of Day---
+Total Amount of Money Transferred: $1260
+Number of Completed Trades: 1
+Number of Shares Traded: 9
+KarGoExpress bought 0 and sold 0 for a net transfer of $0
+KarGoCorp bought 9 and sold 0 for a net transfer of $-1260
+KarGoKrab bought 0 and sold 9 for a net transfer of $1260

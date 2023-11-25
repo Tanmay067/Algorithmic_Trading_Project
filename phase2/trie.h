@@ -97,3 +97,40 @@ vector<int> search_key(TrieNode* root, string& key)
 
 	return result; 
 }
+
+void Update_key(TrieNode* root, string& key, int val,int lastbuyorder, int lastsellorder) 
+{ 
+	// Initialize the currentNode pointer 
+	// with the root node 
+	TrieNode* currentNode = root; 
+
+	// Iterate across the length of the string 
+	for (auto c : key) { 
+
+		// Check if the node exist for the current 
+		// character in the Trie. 
+        int b = c - 'A';
+        if (b > 26) b = b - 32;
+		if (currentNode->childNode[b] == NULL) { 
+
+			// If node for current character does not exist 
+			// then make a new node 
+			TrieNode* newNode = new TrieNode(); 
+
+			// Keep the reference for the newly created 
+			// node. 
+			currentNode->childNode[b] = newNode; 
+		} 
+
+		// Now, move the current node pointer to the newly 
+		// created node. 
+		currentNode = currentNode->childNode[b]; 
+	} 
+
+	// Increment the wordEndCount for the last currentNode 
+	// pointer this implies that there is a string ending at 
+	// currentNode. 
+	currentNode->wordCount += val; 
+	currentNode->b += lastbuyorder; 
+	currentNode->s += lastsellorder; 
+} 
