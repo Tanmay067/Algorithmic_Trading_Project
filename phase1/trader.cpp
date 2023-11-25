@@ -271,24 +271,24 @@ int check_arbitrarge1(ll1 *&head1, ll1 *&tail)
     }
     if (output.empty())
     {
-        cout << "No trade" << endl;
+        cout << "No Trade" << endl;
         return 0;
     }
-    for (ll1 *a : output)
+    for (int a = output.size() - 1; a >= 0; a--)
     {
         int i = 0;
-        for (string b : a->company)
+        for (string b : output[a]->company)
         {
-            if (a->type == "b")
-                cout << b << ' ' << a->number[i] << ' ';
+            if (output[a]->type == "b")
+                cout << b << ' ' << output[a]->number[i] << ' ';
             else
-                cout << b << ' ' << -1 * a->number[i] << ' ';
+                cout << b << ' ' << -1 * output[a]->number[i] << ' ';
             i++;
         }
-        if (a->type == "b")
-            cout << a->price << " s#" << endl;
+        if (output[a]->type == "b")
+            cout << output[a]->price << " s#" << "\r\n";
         else
-            cout << a->price << " b#" << endl;
+            cout << output[a]->price << " b#" << "\r\n";
     }
     head = head1;
     for (ll1 *a : output)
@@ -310,6 +310,347 @@ int check_arbitrarge1(ll1 *&head1, ll1 *&tail)
         else
             head = head->next;
     }
+    return out;
+}
+
+struct ll2
+{
+    vector<string> company;
+    vector<int> number;
+    int price;
+    int quantity;
+    string type;
+    ll2 *parent;
+    ll2 *next;
+};
+
+bool check2(ll2 *&head1, ll2 *&tail, vector<string> &line)
+{
+    if (head1 == nullptr)
+        return true;
+    ll2 *head = head1;
+    while (head != nullptr)
+    {
+        if (line.size() != head->company.size() * 2 + 3)
+        {
+            head = head->next;
+            continue;
+        }
+        int j;
+        bool flag = true;
+        int n = 1;
+        if (line[line.size() - 1] == "s")
+            n = -1;
+        for (int i = 0; i < line.size() / 2 - 1; i++)
+        {
+            j = 0;
+            for (string k : head->company)
+            {
+                if (k == line[2 * i])
+                    break;
+                j++;
+            }
+            if (stoi(line[2 * i + 1]) * n != -head->number[j])
+            {
+                flag = false;
+                break;
+            }
+        }
+        if (flag)
+        {
+            if (line[line.size() - 1] == "b" && head->price == -1 * stoi(line[line.size() - 3]) && head->type == "s" && stoi(line[line.size() - 2]) > head->quantity)
+            {
+                if (head->next == nullptr)
+                    tail = tail->parent;
+                if (head->parent == nullptr)
+                    head1 = head1->next;
+                if (head->next != nullptr)
+                    head->next->parent = head->parent;
+                if (head->parent != nullptr)
+                    head->parent->next = head->next;
+                delete head;
+                line[line.size() - 2] = to_string(stoi(line[line.size() - 2]) - head->quantity);
+                return true;
+            }
+            if (line[line.size() - 1] == "b" && head->price == -1 * stoi(line[line.size() - 3]) && head->type == "s" && stoi(line[line.size() - 2]) < head->quantity)
+            {
+                head->quantity -= stoi(line[line.size() - 2]);
+                return false;
+            }
+            if (line[line.size() - 1] == "b" && head->price == -1 * stoi(line[line.size() - 3]) && head->type == "s" && stoi(line[line.size() - 2]) == head->quantity)
+            {
+                if (head->next == nullptr)
+                    tail = tail->parent;
+                if (head->parent == nullptr)
+                    head1 = head1->next;
+                if (head->next != nullptr)
+                    head->next->parent = head->parent;
+                if (head->parent != nullptr)
+                    head->parent->next = head->next;
+                delete head;
+                return false;
+            }
+            if (line[line.size() - 1] == "s" && head->price == stoi(line[line.size() - 3]) && head->type == "b" && stoi(line[line.size() - 2]) > head->quantity)
+            {
+                if (head->next == nullptr)
+                    tail = tail->parent;
+                if (head->parent == nullptr)
+                    head1 = head1->next;
+                if (head->next != nullptr)
+                    head->next->parent = head->parent;
+                if (head->parent != nullptr)
+                    head->parent->next = head->next;
+                delete head;
+                line[line.size() - 2] = to_string(stoi(line[line.size() - 2]) - head->quantity);
+                return true;
+            }
+            if (line[line.size() - 1] == "s" && head->price == stoi(line[line.size() - 3]) && head->type == "b" && stoi(line[line.size() - 2]) < head->quantity)
+            {
+                head->quantity -= stoi(line[line.size() - 2]);
+                return false;
+            }
+            if (line[line.size() - 1] == "s" && head->price == stoi(line[line.size() - 3]) && head->type == "b" && stoi(line[line.size() - 2]) == head->quantity)
+            {
+                if (head->next == nullptr)
+                    tail = tail->parent;
+                if (head->parent == nullptr)
+                    head1 = head1->next;
+                if (head->next != nullptr)
+                    head->next->parent = head->parent;
+                if (head->parent != nullptr)
+                    head->parent->next = head->next;
+                delete head;
+                return false;
+            }
+        }
+        head = head->next;
+    }
+    return true;
+}
+
+void insert2(ll2 *&head, ll2 *&tail, vector<string> line)
+{
+    ll2 *a = new ll2;
+    for (int i = 0; i < line.size() / 2 - 1; i++)
+    {
+        a->company.push_back(line[2 * i]);
+        a->number.push_back(stoi(line[2 * i + 1]));
+    }
+    if (line[line.size() - 1] == "b")
+        a->price = stoi(line[line.size() - 3]);
+    else
+    {
+        a->price = -1 * stoi(line[line.size() - 3]);
+        for (int i = 0; i < a->number.size(); i++)
+            a->number[i] = -a->number[i];
+    }
+    a->type = line[line.size() - 1];
+    a->quantity = stoi(line[line.size() - 2]);
+    if (head == nullptr)
+    {
+        head = a;
+        head->next = nullptr;
+        a->parent = nullptr;
+        tail = a;
+    }
+    else
+    {
+        tail->next = a;
+        a->parent = tail;
+        a->next = nullptr;
+        tail = a;
+    }
+}
+
+int check_combination2(vector<ll2 *> v1, vector<int> &v)
+{
+    // for (ll2* a : v1)
+    // {
+    //     cout << a->price << " ";
+    // }
+    // cout << endl;
+    vector<string> x;
+    vector<int> y;
+    int l = 0;
+    int m = 0;
+    for (ll2 *a : v1)
+    {
+        int i = 0;
+        for (string b : a->company)
+        {
+            int j = 0;
+            for (string c : x)
+            {
+                if (c == b)
+                    break;
+                j++;
+            }
+            if (j == l)
+            {
+                x.push_back(b);
+                y.push_back(a->number[i]*v[m]);
+                l++;
+            }
+            else
+            {
+                y[j] += a->number[i]*v[m];
+            }
+            i++;
+        }
+        m++;
+    }
+    for (int a : y)
+    {
+        if (a != 0)
+            {
+                // cout << "nothing" << endl;
+                return -1;
+            }
+    }
+    int sum = 0;
+    m = 0;
+    for (ll2 *a : v1)
+    {
+        // cout << a->price << v[m] << endl;
+        sum += a->price*v[m];
+        m++;
+    }
+    // cout << v[1];
+    // cout << sum << endl;
+    return sum;
+}
+
+bool add2(vector<ll2 *> &v1, vector<int> &v, int a)
+{
+    if (a < 0)
+        return true;
+    bool b;
+    if (v[a] == v1[a]->quantity)
+    {
+        b = add2(v1, v, a - 1);
+        if (b)
+            return true;
+        v[a] = 1;
+        return false;
+    }
+    v[a] = v[a] + 1;
+    return false;
+}
+
+bool add3(vector<ll2 *> &v, int a)
+{
+    if (a < 0)
+        return true;
+    bool b;
+    if (v[a]->next != nullptr && a < v.size() - 1 && v[a + 1] == v[a]->next)
+    {
+        b = add3(v, a - 1);
+        if (b)
+            return true;
+        if (v[a - 1]->next == nullptr)
+            return true;
+        v[a] = v[a - 1]->next;
+        return false;
+    }
+    if (v[a]->next == nullptr)
+    {
+        b = add3(v, a - 1);
+        if (b)
+            return true;
+        if (v[a - 1]->next == nullptr)
+            return true;
+        v[a] = v[a - 1]->next;
+        return false;
+    }
+    v[a] = v[a]->next;
+    return false;
+}
+
+int check_arbitrarge2(ll2 *&head1, ll2 *&tail)
+{
+    vector<ll2 *> vec;
+    vector<ll2 *> vec2;
+    vector<int> vec3;
+    vector<int> vec4;
+    vector<ll2 *> output;
+    vector<int> output2;
+    int b;
+    int out = 0;
+    bool a;
+    bool c;
+    ll2 *head = head1;
+    while (head != nullptr)
+    {
+        vec.push_back(head);
+        vec2 = vec;
+        vec3.push_back(1);
+        while (true)
+        {
+            vec4 = vec3;
+            while (true)
+            {
+                b = check_combination2(vec2, vec4);
+                if (b > out)
+                {
+                    out = b;
+                    output = vec2;
+                    output2 = vec4;
+                }
+                c = add2(vec2, vec4, vec4.size() - 1);
+                if (c)
+                    break;
+            }
+            a = add3(vec2, vec2.size() - 1);
+            if (a)
+                break;
+        }
+        head = head->next;
+    }
+    if (output.empty())
+    {
+        cout << "No Trade" << endl;
+        // cout << 4;
+        return 0;
+    }
+    for (int a = output.size() - 1; a >= 0; a--)
+    {
+        int i = 0;
+        for (string b : output[a]->company)
+        {
+            if (output[a]->type == "b")
+                cout << b << ' ' << output[a]->number[i] << ' ';
+            else
+                cout << b << ' ' << -1 * output[a]->number[i] << ' ';
+            i++;
+        }
+        if (output[a]->type == "b")
+            cout << output[a]->price << " " << output2[a] << " s#" << endl;
+        else
+            cout << output[a]->price << " " << output2[a] << " b#" << endl;
+    }
+    // cout << 2 << endl;
+    head = head1;
+    for (ll2 *a : output)
+    {
+        if (head == a)
+        {
+            if (head->next == nullptr)
+                tail = tail->parent;
+            if (head->parent == nullptr)
+                head1 = head1->next;
+            if (head->next != nullptr)
+                head->next->parent = head->parent;
+            if (head->parent != nullptr)
+                head->parent->next = head->next;
+            ll2 *k = head->next;
+            delete head;
+            head = k;
+        }
+        else
+            head = head->next;
+    }
+
+    // cout << 2<< endl;
     return out;
 }
 
@@ -609,6 +950,60 @@ int main(int argc, char **argv)
     }
     else if (stoi(argv[1]) == 3)
     {
+        ll2 *head = nullptr;
+        ll2 *tail = nullptr;
+        vector<string> lines = {""};
+        int j = 0;
+        int sum = 0;
+        while (true)
+        {
+            for (char i : message)
+            {
+                // cout << i;
+                if (i == '$')
+                    continue;
+                if (i == '#')
+                {
+                    if (check2(head, tail, lines))
+                    {
+                        // cout << 1;
+                        insert2(head, tail, lines);
+                    }
+                    sum += check_arbitrarge2(head, tail);
+                    // cout << 3;
+                    // ll2 *head1 = head;
+                    // while (head1 != nullptr)
+                    // {
+                    //     cout << head1->price << " ";
+                    //     head1 = head1->next;
+                    // }
+                    // cout << 1 << endl;
+                    // for (string i : lines)
+                    // {
+                    //     cout << i << ' ';
+                    // }
+                    // cout << endl;
+                    j = 0;
+                }
+                else if ((int)i == 13)
+                {
+                    lines = {""};
+                }
+                else if (i == ' ')
+                {
+                    j++;
+                    lines.push_back("");
+                }
+                else
+                {
+                    lines[j].push_back(i);
+                }
+            }
+            if (message.length() == 0)
+                break;
+            message = rcv.readIML();
+        }
+        cout << sum << endl;
     }
     else
     {
