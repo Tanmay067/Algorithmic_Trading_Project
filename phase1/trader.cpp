@@ -286,10 +286,10 @@ int check_arbitrarge1(ll1 *&head1, ll1 *&tail)
             i++;
         }
         if (output[a]->type == "b")
-            cout << output[a]->price << " s#"
+            cout << output[a]->price << " s"
                  << "\r\n";
         else
-            cout << output[a]->price << " b#"
+            cout << output[a]->price << " b"
                  << "\r\n";
     }
     head = head1;
@@ -626,9 +626,9 @@ int check_arbitrarge2(ll2 *&head1, ll2 *&tail)
             i++;
         }
         if (output[a]->type == "b")
-            cout << output[a]->price << " " << output2[a] << " s#" << endl;
+            cout << output[a]->price << " " << output2[a] << " s" << endl;
         else
-            cout << output[a]->price << " " << output2[a] << " b#" << endl;
+            cout << output[a]->price << " " << output2[a] << " b" << endl;
     }
     // cout << 2 << endl;
     head = head1;
