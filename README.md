@@ -1,13 +1,3 @@
 # Algorithmic_Trading_Project   
    
-* Phase-1    
-        |__part1 = :) completed  
-        |__part2 = :) completed   
-        |__part3 = :) completed  
-  
-* Phase-2     
-        |__part1 = :) completed  
-        |__part2 = :| going on  
-  
-* Phase-3 = :( not started yet   
-
+This repository contains the Algorithmic Trading project done by us for DSA course project at IIT Bombay
